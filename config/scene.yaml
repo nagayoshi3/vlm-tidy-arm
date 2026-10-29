@@ -1,0 +1,128 @@
+# 整理整頓タスクのシーン定義
+# 位置はすべてロボット土台 (crane_plus_base) 基準の極座標
+#   r: 土台中心からの距離 [m]（真上から掴めるのは約 0.05〜0.16）
+#   theta_deg: 正面 (+x) から反時計回りの角度 [deg]（+ がロボットから見て左）
+#   yaw_deg: 物体の向き [deg]
+
+world:
+  name: default
+  table_z: 1.015          # テーブル面（＝ロボット土台）のワールド高さ
+  carry_z: 0.07           # 運搬時の手先高さ（テーブル面から）
+  approach_z: 0.065       # 掴む・置く前に真上で待つ高さ
+  physics_step: 0.004     # 物理計算の刻み [s]。1 ms が標準だが重いので 4 ms（軽い PC 向け）
+
+camera:
+  # 机を真上から見下ろすカメラ（VLM への入力画像）
+  x: 0.02
+  y: 0.0
+  height: 0.55            # テーブル面からの高さ
+  hfov: 0.75              # 水平画角 [rad]
+  width: 800
+  height_px: 600
+  update_rate: 2.0
+
+# デフォルトの指示（ノード起動時に --ros-args -p instruction:=... で上書き可）
+instruction: "これから資料作りをするので、仕事に集中できるように机を整理整頓して。"
+
+# 片付けの行き先。category は VLM が選ぶ分類名と一致させる
+zones:
+  - category: stationery
+    label: 文房具トレイ
+    color: [0.55, 0.75, 0.95, 1.0]
+    slots:                # 置き場所の候補。前から順に詰めて並べる（＝整頓）
+      - {r: 0.13, theta_deg: 62, yaw_deg: 62}
+      - {r: 0.13, theta_deg: 78, yaw_deg: 78}
+      - {r: 0.13, theta_deg: 94, yaw_deg: 94}
+      - {r: 0.13, theta_deg: 110, yaw_deg: 110}
+  - category: tableware
+    label: 食器コーナー
+    color: [0.95, 0.85, 0.55, 1.0]
+    slots:
+      - {r: 0.13, theta_deg: -62, yaw_deg: -62}
+      - {r: 0.13, theta_deg: -80, yaw_deg: -80}
+  - category: other
+    label: その他の置き場
+    color: [0.80, 0.80, 0.80, 1.0]
+    slots:
+      - {r: 0.105, theta_deg: 125, yaw_deg: 125}
+      - {r: 0.105, theta_deg: 143, yaw_deg: 143}
+
+trash:
+  label: ゴミ箱
+  r: 0.11
+  theta_deg: -118
+  radius: 0.032           # 箱の半径（正方形の半辺）
+  wall_height: 0.035
+  color: [0.35, 0.35, 0.38, 1.0]
+
+# 散らかった机の上の物（初期配置）
+#   shape: box(size=[x,y,z]) / cylinder(radius,length) / sphere(radius)
+#   lying: true なら円柱を横倒しに置く（ペンなど）
+#   mock: VLM を使わない mock モード用の正解（API キーなしで動作確認するため）
+objects:
+  - id: obj1
+    name: ボールペン
+    name_en: pen
+    shape: cylinder
+    radius: 0.007
+    length: 0.08
+    lying: true
+    color: [0.10, 0.25, 0.85, 1.0]
+    r: 0.09
+    theta_deg: -52
+    yaw_deg: -52
+    mock: {decision: keep, category: stationery}
+  - id: obj2
+    name: 丸めた紙くず
+    name_en: crumpled paper
+    shape: sphere
+    radius: 0.018
+    color: [0.92, 0.92, 0.88, 1.0]
+    r: 0.113
+    theta_deg: -3
+    yaw_deg: 0
+    mock: {decision: discard, category: trash}
+  - id: obj3
+    name: マグカップ
+    name_en: mug
+    shape: cylinder
+    radius: 0.021
+    length: 0.045
+    lying: false
+    color: [0.85, 0.30, 0.25, 1.0]
+    r: 0.135
+    theta_deg: -41
+    yaw_deg: 0
+    mock: {decision: keep, category: tableware}
+  - id: obj4
+    name: 空き缶
+    name_en: empty can
+    shape: cylinder
+    radius: 0.015
+    length: 0.05
+    lying: false
+    color: [0.75, 0.78, 0.80, 1.0]
+    r: 0.133
+    theta_deg: 20
+    yaw_deg: 0
+    mock: {decision: discard, category: trash}
+  - id: obj5
+    name: 消しゴム
+    name_en: eraser
+    shape: box
+    size: [0.038, 0.022, 0.016]
+    color: [0.97, 0.97, 0.97, 1.0]
+    r: 0.09
+    theta_deg: 23
+    yaw_deg: 40
+    mock: {decision: keep, category: stationery}
+  - id: obj6
+    name: 付箋
+    name_en: sticky notes
+    shape: box
+    size: [0.036, 0.036, 0.014]
+    color: [0.98, 0.88, 0.20, 1.0]
+    r: 0.11
+    theta_deg: 46
+    yaw_deg: 10
+    mock: {decision: keep, category: stationery}

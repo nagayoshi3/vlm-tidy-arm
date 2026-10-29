@@ -1,0 +1,74 @@
+# 初級版シーン：物体3個・置き場1種類・ゴミ箱。使い方:
+#   ros2 launch tidy_robot tidy_sim.launch.py scene_file:=$(ros2 pkg prefix tidy_robot)/share/tidy_robot/config/scene_lite.yaml
+#   ros2 run tidy_robot tidy_node --ros-args -p scene_file:=$(ros2 pkg prefix tidy_robot)/share/tidy_robot/config/scene_lite.yaml
+
+world:
+  name: default
+  table_z: 1.015
+  carry_z: 0.07
+  approach_z: 0.065
+  physics_step: 0.004
+
+camera:
+  x: 0.02
+  y: 0.0
+  height: 0.55
+  hfov: 0.75
+  width: 800
+  height_px: 600
+  update_rate: 2.0
+
+instruction: "これから資料作りをするので、仕事に集中できるように机を整理整頓して。"
+
+zones:
+  - category: keep          # 残す物は全部ここ（分類は1種類）
+    label: 置き場
+    color: [0.55, 0.75, 0.95, 1.0]
+    slots:
+      - {r: 0.13, theta_deg: 80, yaw_deg: 80}
+      - {r: 0.13, theta_deg: 100, yaw_deg: 100}
+      - {r: 0.13, theta_deg: 120, yaw_deg: 120}
+
+trash:
+  label: ゴミ箱
+  r: 0.11
+  theta_deg: -105
+  radius: 0.032
+  wall_height: 0.035
+  color: [0.35, 0.35, 0.38, 1.0]
+
+objects:
+  - id: obj1
+    name: ボールペン
+    name_en: pen
+    shape: cylinder
+    radius: 0.007
+    length: 0.09
+    lying: true
+    color: [0.10, 0.25, 0.85, 1.0]
+    r: 0.13
+    theta_deg: -25
+    yaw_deg: 20
+    mock: {decision: keep, category: keep}
+  - id: obj2
+    name: 丸めた紙くず
+    name_en: crumpled paper
+    shape: sphere
+    radius: 0.018
+    color: [0.92, 0.92, 0.88, 1.0]
+    r: 0.10
+    theta_deg: 5
+    yaw_deg: 0
+    mock: {decision: discard, category: trash}
+  - id: obj3
+    name: マグカップ
+    name_en: mug
+    shape: cylinder
+    radius: 0.021
+    length: 0.045
+    lying: false
+    color: [0.85, 0.30, 0.25, 1.0]
+    r: 0.135
+    theta_deg: 25
+    yaw_deg: 0
+    mock: {decision: keep, category: keep}

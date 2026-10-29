@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+build/
+install/
+log/
+.env
+*.key
+tidy_logs/
+.DS_Store
+.pytest_cache/
